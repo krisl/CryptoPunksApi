@@ -39,17 +39,19 @@ test('Punk info service', (t) => {
   t.plan(2)
 
   t.deepEqual(
-    getPunk(1),
-    { gender: "Male",
-      accessories: [ "Smile", "Mohawk" ]
+    getPunk(1, { 1: { isForSale: true, minValue: '' + 1e18 }}),
+    { id: 1, gender: "Male",
+      accessories: [ "Smile", "Mohawk" ],
+      isForSale: true,
+      price: "1 ETH"
     },
     'Punk fetched from CryptoPunks.json file'
   )
 
   t.deepEqual(
-    getPunk(10000),
-    {},
-    'Missing punks return empty object'
+    getPunk(10000, {}),
+    { id: 10000, isForSale: undefined, price: null},
+    'Missing punks return basic object'
   )
 })
 
