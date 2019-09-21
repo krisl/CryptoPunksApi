@@ -9,6 +9,14 @@ const CONTRACT_ID = "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"
 
 const getPunk = (punkId) => cryptoPunksJson[punkId] || {}
 
+/*
+ * rather than query the network for each client request for punk information
+ * or by trying to maintain the same state as the contracts authoritive mapping
+ * 'punksOfferedForSale', we will listen to all events capable of invalidating
+ * that state and requery the network for the state of the affected punk. This
+ * frees us from having to replicate the exact logic of the contract and allows
+ * us to offer a streaming api to the client through GraphQL subscriptions eg
+*/
 function init (punksForSale) {
   /* we use HTTPS for batch request as under NodeJS these are */
   /* much faster than WS and allow for greater batch sizes. */
