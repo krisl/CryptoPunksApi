@@ -1,5 +1,21 @@
 const test = require('tape')
 
+test('Batch promise bulk add', t => {
+  const { batchPromiseBulkAdd } = require('./utils.js')
+  t.plan(3)
+  const added = []
+  const batch = { add: (item) => added.push(item) }
+  const items = [{callback: () => {}}]
+  
+  const promise = batchPromiseBulkAdd(batch, items)
+  t.equal(added[0], items[0], 'Individual items are added to batch')
+  t.deepEqual(added, items, 'All items are added to batch')
+  items.forEach(item => item.callback())
+  promise.then(() => {
+    t.pass('Promise is resolved resolved when all items called back')
+  })
+})
+
 test('Punk info service', (t) => {
   const { getPunk } = require('./punkInfo.js')
   t.plan(2)

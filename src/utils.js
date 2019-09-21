@@ -1,3 +1,20 @@
+/* convenience function to wrap *?
+/* web3 batching in a promise */
+function batchPromiseBulkAdd (batch, items) {
+  return new Promise((resolve, reject) => {
+    var count = items.length
+    const wrapCallback = callback => (err, res) => {
+      if (err) reject(err)
+      if (--count == 0) resolve()
+      callback(res)
+    }
+    items.forEach(item => {
+      item.callback = wrapCallback(item.callback)
+      batch.add(item)
+    })
+  })
+}
+
 /* give a promise returning function, returns an object with an "add" */
 /* method. All _unique_ added items will be passed to the promise */
 /* returning function as a single array. Subsequent calls to that */
@@ -38,4 +55,4 @@ function partition (array, size) {
   return result
 }
 
-module.exports = { makeBatchQueue , partition }
+module.exports = { makeBatchQueue, partition, batchPromiseBulkAdd }
