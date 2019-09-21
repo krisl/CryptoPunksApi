@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node src/index.js",
-    "test": "node src/test.js"
+    "test": "node src/test.js | tap-spec"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +16,7 @@
     "web3": "^1.2.1"
   },
   "devDependencies": {
+    "tap-spec": "^5.0.0",
     "tape": "^4.11.0"
   }
 }
