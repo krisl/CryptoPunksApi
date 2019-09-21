@@ -111,3 +111,14 @@ test('Partition', t => {
   t.deepEqual(partition([1,2], 1), [[1],[2]], 'Partitions evenly')
   t.deepEqual(partition([1,2,3], 2), [[1,2],[3]], 'Partitions overflow')
 })
+
+test('Network test - fetch state via events', t => {
+  const { init } = require('./punkInfo.js')
+  const [BLOCK, PUNK] = [8587584, 8343]
+  t.plan(1)
+  const punksForSale = {_block: BLOCK}
+  init(punksForSale, (provider) => {
+    t.ok(punksForSale[PUNK], `Block ${BLOCK} contains event for ${PUNK}`)
+    provider.disconnect()
+  })
+})

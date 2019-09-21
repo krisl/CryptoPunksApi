@@ -100,7 +100,7 @@ function init (punksForSale, cb) {
     /* infura.io has a limit of 10,000 events, so would be nice to cache the sale state as of the max block */
     /* returned in the events.  Then load the cache and getPastEvents only from the last cached block */
     /* in such a case, getPastEvents will need to be extened to include PunkBought and PunkNoLongerForSale */
-    contract.getPastEvents('PunkOffered', {fromBlock: 0})
+    contract.getPastEvents('PunkOffered', {fromBlock: punksForSale._block || 0})
       .then(evts => {
         console.log('Received previous offer events, count:', evts.length)
         return evts.reduce(
