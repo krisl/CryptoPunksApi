@@ -26,7 +26,7 @@ const getPunk = (punkId, punksForSale) => {
  * frees us from having to replicate the exact logic of the contract and allows
  * us to offer a streaming api to the client through GraphQL subscriptions eg
 */
-function init (punksForSale) {
+function init (punksForSale, cb) {
   /* we use HTTPS for batch request as under NodeJS these are */
   /* much faster than WS and allow for greater batch sizes. */
   /* In the browser however, no partitioning is required */
@@ -103,6 +103,7 @@ function init (punksForSale) {
           Promise.resolve()
         ).then(() => {
           console.log('Initialisation complete')
+          cb()
         })
       })
   })
