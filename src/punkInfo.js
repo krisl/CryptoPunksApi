@@ -78,6 +78,8 @@ function init (punksForSale) {
         return forSaleInfoFetchQueue.add(evt.returnValues.punkIndex)
       }
     )
+    /* subscribe to newBlockHeaders also to keep WebSocket open and allow easy visual check */
+    web3.eth.subscribe('newBlockHeaders').on("data", blockHeader => console.log('new block header: ', blockHeader.number))
   })
 }
 
