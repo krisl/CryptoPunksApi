@@ -61,3 +61,11 @@ test('Queue - batching', t => {
     })
   })
 })
+
+test('Partition', t => {
+  const { partition } = require('./utils.js')
+  t.plan(3)
+  t.deepEqual(partition([], 10), [], 'Partitions empty array')
+  t.deepEqual(partition([1,2], 1), [[1],[2]], 'Partitions evenly')
+  t.deepEqual(partition([1,2,3], 2), [[1,2],[3]], 'Partitions overflow')
+})

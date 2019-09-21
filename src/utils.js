@@ -29,4 +29,13 @@ function makeBatchQueue (promiseFn) {
   }
 }
 
-module.exports = { makeBatchQueue }
+/* given an array and a size, returns an */
+/* array of arrays of specified size */
+function partition (array, size) {
+  const result = []
+  while (array.length > 0)
+    result.push(array.splice(0, size))
+  return result
+}
+
+module.exports = { makeBatchQueue , partition }
