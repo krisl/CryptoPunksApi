@@ -44,6 +44,7 @@ function init (punksForSale, cb) {
     maxReceivedMessageSize: 10 * 1024 * 1024
   }}))
 
+  web3.currentProvider.on('error', () => { throw 'websocket error' })
   web3.currentProvider.on('connect', () => {
     console.log('WebSocket connected')
 
@@ -107,7 +108,7 @@ function init (punksForSale, cb) {
           Promise.resolve()
         ).then(() => {
           console.log('Initialisation complete')
-          cb()
+          cb(web3.currentProvider)
         })
       })
   })

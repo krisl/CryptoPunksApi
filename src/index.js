@@ -35,10 +35,18 @@ app.use('/graphql', graphqlHTTP({
   graphiql: true,
 }))
 
-init(punksForSale, () =>
+init(punksForSale, (provider) =>
   app.listen(
     4000,
-    () => console.log('Running a GraphQL API server at localhost:4000/graphql')
+    () => {
+      console.log('Running a GraphQL API server at localhost:4000/graphql')
+      process.on('uncaughtException', (e) => {
+        console.error(e)
+        console.log('Reinitialising...')
+        provider.disconnect()
+        init(punksForSale, (newProvider) => { provider = newProvider })
+      })
+    }
   )
 )
 
