@@ -80,6 +80,22 @@ function init (punksForSale) {
     )
     /* subscribe to newBlockHeaders also to keep WebSocket open and allow easy visual check */
     web3.eth.subscribe('newBlockHeaders').on("data", blockHeader => console.log('new block header: ', blockHeader.number))
+
+    console.log('Fetching previous offer events...')
+    /* as of time of implementation, fetching all PunkOffered events return ~8000 events for ~3100 punks */
+    /* infura.io has a limit of 10,000 events, so would be nice to cache the sale state as of the max block */
+    /* returned in the events.  Then load the cache and getPastEvents only from the last cached block */
+    /* in such a case, getPastEvents will need to be extened to include PunkBought and PunkNoLongerForSale */
+    contract.getPastEvents('PunkOffered', {fromBlock: 0})
+      .then(evts => {
+        console.log('Received previous offer events, count:', evts.length)
+        return evts.reduce(
+          (p, evt) => forSaleInfoFetchQueue.add(evt.returnValues.punkIndex),
+          Promise.resolve()
+        ).then(() => {
+          console.log('Initialisation complete')
+        })
+      })
   })
 }
 
