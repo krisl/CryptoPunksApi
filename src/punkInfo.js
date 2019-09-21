@@ -6,15 +6,19 @@ const NETWORK_WSS = 'wss://mainnet.infura.io/ws/v3/498494c790964af8be6eafe6e2cdf
 const NETWORK_HTTPS = 'https://mainnet.infura.io/v3/498494c790964af8be6eafe6e2cdffec'
 const CONTRACT_ID = "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"
 
+const priceInEth = (price) => {
+  /* this should never happen but we dont want to throw exceptions which */
+  /* are fatal to the event listener, just because a conversion failed */
+  try { return `${Web3.utils.fromWei(price)} ETH` } catch (e) { }
+  return 'ERROR'
+}
 
 const getPunk = (punkId, punksForSale) => {
   salePunk = punksForSale[punkId] || {}
   punk = cryptoPunksJson[punkId] || {}
   punk.id = punkId
   punk.isForSale = salePunk.isForSale
-  punk.price = salePunk.isForSale
-    ? `${Web3.utils.fromWei(salePunk.minValue)} ETH`
-    : null
+  punk.price = salePunk.isForSale ? priceInEth(salePunk.minValue) : null
   return punk
 }
 

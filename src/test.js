@@ -36,7 +36,7 @@ test('Batch promise bulk add - rejected', t => {
 
 test('Punk info service', (t) => {
   const { getPunk } = require('./punkInfo.js')
-  t.plan(2)
+  t.plan(3)
 
   t.deepEqual(
     getPunk(1, { 1: { isForSale: true, minValue: '' + 1e18 }}),
@@ -52,6 +52,12 @@ test('Punk info service', (t) => {
     getPunk(10000, {}),
     { id: 10000, isForSale: undefined, price: null},
     'Missing punks return basic object'
+  )
+
+  t.deepEqual(
+    getPunk(10000, { 10000: { isForSale: true, minValue: null }}),
+    { id: 10000, isForSale: true, price: 'ERROR'},
+    'Converting bad "minValue" does not throw exception'
   )
 })
 
