@@ -1,5 +1,58 @@
 const test = require('tape')
 
+const supertest = require('supertest')
+const { makeGraphQLApp } = require('./graphql.js')
+const server = supertest(makeGraphQLApp({
+  2: { isForSale: true, minValue: '' + 1e17 },
+  3: { isForSale: true } // invalid structure with missing 'minValue' 
+}))
+
+test('GraphQL - getPunk no sale info', t => {
+  t.plan(1)
+  server.post('/graphql')
+    .send({ query: `{ getPunk(punkId: 1) { id gender accessories isForSale price } }` })
+    .expect(200)
+    .then(res => t.deepEqual(res.body, { data: {
+      getPunk: {
+        id: 1, gender: "Male",
+        accessories: [ "Smile", "Mohawk" ],
+        isForSale: null, price: null
+      }
+    } }, 'Returns information from CryptoPunks.json'))
+})
+
+test('GraphQL - getPunk with sale info', t => {
+  t.plan(1)
+  server.post('/graphql')
+    .send({ query: `{ getPunk(punkId: 2) { id gender accessories isForSale price } }` })
+    .expect(200)
+    .then(res => t.deepEqual(res.body, { data: {
+      getPunk: {
+        id: 2, gender: "Female",
+        accessories: [ "Wild Hair" ],
+        isForSale: true, price: '0.1 ETH'
+      }
+    } }, 'Returns information from CryptoPunks.json and ForSale db'))
+})
+  
+test('GraphQL - getPunksForSale', t => {
+  t.plan(1)
+  server.post('/graphql')
+    .send({ query: `{ getPunksForSale { id gender accessories isForSale price } }` })
+    .expect(200)
+    .then(res => t.deepEqual(res.body, { data: {
+      getPunksForSale: [{
+        id: 2, gender: "Female",
+        accessories: [ "Wild Hair" ],
+        isForSale: true, price: '0.1 ETH'
+      }, {
+        id: 3, gender: "Male",
+        accessories: [ "Wild Hair", "Nerd Glasses", "Pipe" ],
+        isForSale: true, price: 'ERROR'
+      }]
+    } }, 'Returns array of information from CryptoPunks.json and ForSale db'))
+})
+
 test('Batch promise bulk add - resolved', t => {
   const { batchPromiseBulkAdd } = require('./utils.js')
   t.plan(3)
