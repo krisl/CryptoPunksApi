@@ -1,6 +1,7 @@
 const { init } = require('./punkInfo.js')
 const { makeGraphQLApp } = require('./graphql.js')
 
+const PORT = process.env.PORT || 4000
 const punksForSale = {}
 const app = makeGraphQLApp(punksForSale)
 
@@ -19,9 +20,9 @@ function installErrorHandler (ee) {
 const eventEmitter = init(punksForSale)
 eventEmitter.then(() =>
   app.listen(
-    4000,
+    PORT,
     () => {
-      console.log('Running a GraphQL API server at localhost:4000/graphql')
+      console.log(`Running a GraphQL API server at localhost:${PORT}/graphql`)
       installErrorHandler(eventEmitter)
     }
   )
