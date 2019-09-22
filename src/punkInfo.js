@@ -42,8 +42,9 @@ function init (punksForSale) {
         const batch = new web3Https.BatchRequest()
         const promise = batchPromiseBulkAdd(
           batch,
-          subset.map(i => contract.methods.punksOfferedForSale(i).call.request(updateForSaleInfo)
-        ))
+          subset.map(i => contract.methods.punksOfferedForSale(i).call.request),
+          updateForSaleInfo
+        )
         batch.execute()
         console.log('Sent batch of requests, size: ', batch.requests.length)
         return promise.then(
