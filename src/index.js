@@ -18,11 +18,18 @@ function installErrorHandler (ee) {
 }
 
 const eventEmitter = init(punksForSale)
+
+eventEmitter.on('error', e => {
+  console.error('Exception encountered while starting, aborting', e)
+  process.exit(1)
+})
+
 eventEmitter.then(() =>
   app.listen(
     PORT,
     () => {
       console.log(`Running a GraphQL API server at localhost:${PORT}/graphql`)
+      eventEmitter.removeAllListeners()
       installErrorHandler(eventEmitter)
     }
   )
