@@ -170,7 +170,7 @@ test('Network test - fetch state via events', t => {
   const [BLOCK, PUNK] = [8587584, 8343]
   t.plan(1)
   const punksForSale = {_block: BLOCK}
-  init(punksForSale, (provider) => {
+  init(punksForSale).then((provider) => {
     t.ok(punksForSale[PUNK], `Block ${BLOCK} contains event for ${PUNK}`)
     provider.disconnect()
   })

@@ -1,4 +1,5 @@
 const Web3 = require('web3')
+const Web3PromiEvent = require('web3-core-promievent')
 const { makeBatchQueue, partition, batchPromiseBulkAdd } = require('./utils.js')
 const cryptoPunksJson = require('./resources/CryptoPunks.json')
 const contractAbi = require('./resources/Contract.abi.json')
@@ -30,7 +31,7 @@ const getPunk = (punkId, punksForSale) => {
  * frees us from having to replicate the exact logic of the contract and allows
  * us to offer a streaming api to the client through GraphQL subscriptions eg
 */
-function init (punksForSale, cb) {
+function init (punksForSale) {
   /* we use HTTPS for batch request as under NodeJS these are */
   /* much faster than WS and allow for greater batch sizes. */
   /* In the browser however, no partitioning is required */
@@ -44,7 +45,11 @@ function init (punksForSale, cb) {
     maxReceivedMessageSize: 10 * 1024 * 1024
   }}))
 
-  web3.currentProvider.on('error', () => { throw 'websocket error' })
+  const promiEvent = Web3PromiEvent()
+  web3.currentProvider.on('error', (e) => {
+    promiEvent.eventEmitter.emit('error', e)
+  })
+
   web3.currentProvider.on('connect', () => {
     console.log('WebSocket connected')
 
@@ -71,7 +76,7 @@ function init (punksForSale, cb) {
         console.log('Sent batch of requests, size: ', batch.requests.length)
         return promise.then(
           () => console.log('Number of punks for sale', Object.values(punksForSale).filter(punk => punk && punk.isForSale).length)
-        )
+        ).catch((e) => promiEvent.eventEmitter.emit('error', e))
       }))
     }
 
@@ -86,10 +91,13 @@ function init (punksForSale, cb) {
         web3.utils.keccak256('PunkNoLongerForSale(uint256)')
       ]]},
       (err, evt) => {
-        /* if we throw an execption at this point all bets are off */
-        /* and the init proceedure should be started again*/
-        if (err) throw err
-        return forSaleInfoFetchQueue.add(evt.returnValues.punkIndex)
+        if (err) {
+          /* if we have an error at this point all bets are off */
+          /* and the init proceedure should be started again*/
+          promiEvent.eventEmitter.emit('error', err)
+        } else {
+          forSaleInfoFetchQueue.add(evt.returnValues.punkIndex)
+        }
       }
     )
     /* subscribe to newBlockHeaders also to keep WebSocket open and allow easy visual check */
@@ -108,10 +116,17 @@ function init (punksForSale, cb) {
           Promise.resolve()
         ).then(() => {
           console.log('Initialisation complete')
-          cb(web3.currentProvider)
+          promiEvent.resolve(web3.currentProvider)
         })
       })
   })
+
+  promiEvent.eventEmitter.reinit = function () {
+    web3.currentProvider.disconnect()
+    return init(punksForSale)
+  }
+
+  return promiEvent.eventEmitter
 }
 
 module.exports = { getPunk, init }

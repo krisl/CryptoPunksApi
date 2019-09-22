@@ -4,17 +4,25 @@ const { makeGraphQLApp } = require('./graphql.js')
 const punksForSale = {}
 const app = makeGraphQLApp(punksForSale)
 
-init(punksForSale, (provider) =>
+function installErrorHandler (ee) {
+  ee.on('error', (e) => {
+    ee.removeAllListeners()
+    ee.on('error', (e) => {
+      console.log('Encountered error on defunct event emitter, ignoring', e)
+    })
+    console.error('Encountered error', e)
+    console.log('Reinitialising...')
+    installErrorHandler(ee.reinit())
+  })
+}
+
+const eventEmitter = init(punksForSale)
+eventEmitter.then(() =>
   app.listen(
     4000,
     () => {
       console.log('Running a GraphQL API server at localhost:4000/graphql')
-      process.on('uncaughtException', (e) => {
-        console.error(e)
-        console.log('Reinitialising...')
-        provider.disconnect()
-        init(punksForSale, (newProvider) => { provider = newProvider })
-      })
+      installErrorHandler(eventEmitter)
     }
   )
 )
