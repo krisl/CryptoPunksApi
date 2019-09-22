@@ -1,18 +1,36 @@
 const test = require('tape')
 
-test('Batch promise bulk add', t => {
+test('Batch promise bulk add - resolved', t => {
   const { batchPromiseBulkAdd } = require('./utils.js')
   t.plan(3)
   const added = []
   const batch = { add: (item) => added.push(item) }
-  const items = [{callback: () => {}}]
+  const item = {}
+  const requests = [(callback) => callback]
+  const callback = (result) => t.equal(result, item, 'Callback is called with result')
   
-  const promise = batchPromiseBulkAdd(batch, items)
-  t.equal(added[0], items[0], 'Individual items are added to batch')
-  t.deepEqual(added, items, 'All items are added to batch')
-  items.forEach(item => item.callback())
+  const promise = batchPromiseBulkAdd(batch, requests, callback)
+  t.equal(added.length, requests.length, 'Individual items are added to batch')
+  added.forEach(cb => cb(null, item))
   promise.then(() => {
-    t.pass('Promise is resolved resolved when all items called back')
+    t.pass('Promise is resolved when all items called back')
+  })
+})
+
+test('Batch promise bulk add - rejected', t => {
+  const { batchPromiseBulkAdd } = require('./utils.js')
+  t.plan(2)
+  const added = []
+  const batch = { add: (item) => added.push(item) }
+  const item = {}
+  const requests = [(callback) => callback]
+  const callback = (result) => t.fail('Should not be called')
+  
+  const promise = batchPromiseBulkAdd(batch, requests, callback)
+  t.equal(added.length, requests.length, 'Individual items are added to batch')
+  added.forEach(cb => cb('error', item))
+  promise.catch((err) => {
+    t.equal(err, 'error', 'Promise is rejected')
   })
 })
 

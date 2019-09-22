@@ -1,16 +1,21 @@
 /* convenience function to wrap *?
 /* web3 batching in a promise */
-function batchPromiseBulkAdd (batch, items) {
+function batchPromiseBulkAdd (batch, requests, callback) {
   return new Promise((resolve, reject) => {
-    var count = items.length
-    const wrapCallback = callback => (err, res) => {
-      if (err) reject(err)
-      if (--count == 0) resolve()
+    var count = requests.length
+    var rejected = false
+    const promiseCallback = (err, res) => {
+      if (rejected) return
+      if (err) {
+        rejected = true
+        reject(err)
+        return
+      }
       callback(res)
+      if (--count == 0) resolve()
     }
-    items.forEach(item => {
-      item.callback = wrapCallback(item.callback)
-      batch.add(item)
+    requests.forEach(request => {
+      batch.add(request(promiseCallback))
     })
   })
 }
