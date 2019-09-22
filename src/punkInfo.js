@@ -96,6 +96,7 @@ function init (punksForSale) {
           /* and the init proceedure should be started again*/
           promiEvent.eventEmitter.emit('error', err)
         } else {
+          console.log('Received event', evt)
           forSaleInfoFetchQueue.add(evt.returnValues.punkIndex)
         }
       }
