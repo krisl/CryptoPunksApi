@@ -4,6 +4,7 @@ function batchPromiseBulkAdd (batch, requests, callback) {
   return new Promise((resolve, reject) => {
     var count = requests.length
     var rejected = false
+    const results = []
     const promiseCallback = (err, res) => {
       if (rejected) return
       if (err) {
@@ -11,8 +12,9 @@ function batchPromiseBulkAdd (batch, requests, callback) {
         reject(err)
         return
       }
+      results.push(res)
       callback(res)
-      if (--count == 0) resolve()
+      if (--count == 0) resolve(results)
     }
     requests.forEach(request => {
       batch.add(request(promiseCallback))

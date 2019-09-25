@@ -74,9 +74,10 @@ function init (punksForSale) {
         )
         batch.execute()
         console.log('Sent batch of requests, size: ', batch.requests.length)
-        return promise.then(
+        promise.then(
           () => console.log('Number of punks for sale', Object.values(punksForSale).filter(punk => punk && punk.isForSale).length)
         ).catch((e) => promiEvent.eventEmitter.emit('error', e))
+        return promise
       }))
     }
 
