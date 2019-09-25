@@ -98,7 +98,12 @@ function init (punksForSale) {
           promiEvent.eventEmitter.emit('error', err)
         } else {
           console.log('Received event', evt)
-          forSaleInfoFetchQueue.add(evt.returnValues.punkIndex)
+          // despite having recieved the event, the network state is not up to date
+          // give it a couple of seconds
+          setTimeout(
+            () => forSaleInfoFetchQueue.add(evt.returnValues.punkIndex),
+            2000
+          )
         }
       }
     )
