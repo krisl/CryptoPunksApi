@@ -13,7 +13,7 @@ function installErrorHandler (ee) {
     })
     console.error('Encountered error', e)
     console.log('Reinitialising...')
-    installErrorHandler(ee.reinit())   
+    installErrorHandler(ee.reinit())
   })
 }
 

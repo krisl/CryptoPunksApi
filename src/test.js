@@ -34,7 +34,7 @@ test('GraphQL - getPunk with sale info', t => {
       }
     } }, 'Returns information from CryptoPunks.json and ForSale db'))
 })
-  
+
 test('GraphQL - getPunksForSale', t => {
   t.plan(1)
   server.post('/graphql')
@@ -61,7 +61,7 @@ test('Batch promise bulk add - resolved', t => {
   const item = {}
   const requests = [(callback) => callback]
   const callback = (result) => t.equal(result, item, 'Callback is called with result')
-  
+
   const promise = batchPromiseBulkAdd(batch, requests, callback)
   t.equal(added.length, requests.length, 'Individual items are added to batch')
   added.forEach(cb => cb(null, item))
@@ -77,8 +77,8 @@ test('Batch promise bulk add - rejected', t => {
   const batch = { add: (item) => added.push(item) }
   const item = {}
   const requests = [(callback) => callback]
-  const callback = (result) => t.fail('Should not be called')
-  
+  const callback = () => t.fail('Should not be called')
+
   const promise = batchPromiseBulkAdd(batch, requests, callback)
   t.equal(added.length, requests.length, 'Individual items are added to batch')
   added.forEach(cb => cb('error', item))
