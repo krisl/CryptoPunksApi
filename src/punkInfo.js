@@ -15,8 +15,8 @@ const priceInEth = (price) => {
 }
 
 const getPunk = (punkId, punksForSale) => {
-  salePunk = punksForSale[punkId] || {}
-  punk = cryptoPunksJson[punkId] || {}
+  const salePunk = punksForSale[punkId] || {}
+  const punk = cryptoPunksJson[punkId] || {}
   punk.id = punkId
   punk.isForSale = salePunk.isForSale
   punk.price = salePunk.isForSale ? priceInEth(salePunk.minValue) : null
