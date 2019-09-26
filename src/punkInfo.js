@@ -80,7 +80,7 @@ function init (punksForSale) {
       }))
     }
 
-    const forSaleInfoFetchQueue = makeBatchQueue(offeredForSale)
+    const forSaleInfoFetchQueue = makeBatchQueue(offeredForSale, 200)
 
     /* Listen for the only three events capable of invalidating */
     /* the Forsale state */

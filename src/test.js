@@ -120,7 +120,7 @@ test('Queue - unique items', t => {
   const queue = makeBatchQueue((item) => {
     t.deepEqual(item, ['500', '501'], 'Processes only unique items')
     return Promise.resolve()
-  })
+  }, 0)
   queue.add(500)
   queue.add(500)
   queue.add(501)
@@ -129,7 +129,7 @@ test('Queue - unique items', t => {
 test('Queue - returns promise', t => {
   const { makeBatchQueue } = require('./utils.js')
   t.plan(2)
-  const queue = makeBatchQueue((item) => Promise.resolve(item))
+  const queue = makeBatchQueue((item) => Promise.resolve(item), 0)
   const promise1 = queue.add(507)
   const promise2 = queue.add(508)
   t.equal(promise1, promise2, 'Items added in same loop return same promise')
@@ -141,7 +141,7 @@ test('Queue - returns promise', t => {
 test('Queue - batching', t => {
   const { makeBatchQueue } = require('./utils.js')
   t.plan(3)
-  const queue = makeBatchQueue((item) => Promise.resolve(item))
+  const queue = makeBatchQueue((item) => Promise.resolve(item), 200)
   const promise1 = queue.add(507)
 
   promise1.then((item) => {
@@ -154,7 +154,7 @@ test('Queue - batching', t => {
       t.deepEqual(item, ['508'], 'Second promise resolved with second added items')
       t.notEqual(promise1, promise2, 'First and second promises are independent')
     })
-  })
+  }, 201)
 })
 
 test('Partition', t => {
