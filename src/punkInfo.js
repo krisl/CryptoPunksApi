@@ -10,8 +10,7 @@ const CONTRACT_ID = "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb"
 const priceInEth = (price) => {
   /* this should never happen but we dont want to throw exceptions which */
   /* are fatal to the event listener, just because a conversion failed */
-  try { return `${Web3.utils.fromWei(price)} ETH` } catch (e) { }
-  return 'ERROR'
+  try { return `${Web3.utils.fromWei(price)} ETH` } catch (e) { return 'ERROR' }
 }
 
 const getPunk = (punkId, punksForSale) => {
