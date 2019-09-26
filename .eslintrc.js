@@ -5,7 +5,7 @@ module.exports = {
     node: true
   },
   extends: [
-    'standard'
+    'eslint:recommended'
   ],
   globals: {
     Atomics: 'readonly',
