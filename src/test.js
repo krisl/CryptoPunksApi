@@ -4,7 +4,7 @@ const supertest = require('supertest')
 const { makeGraphQLApp } = require('./graphql.js')
 const server = supertest(makeGraphQLApp({
   2: { isForSale: true, minValue: '' + 1e17 },
-  3: { isForSale: true } // invalid structure with missing 'minValue' 
+  3: { isForSale: true } // invalid structure with missing 'minValue'
 }))
 
 test('GraphQL - getPunk no sale info', t => {
