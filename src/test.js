@@ -157,6 +157,48 @@ test('Queue - batching', t => {
   }, 201)
 })
 
+test('debounceUnque - unique items', t => {
+  const { debounceUnique } = require('./utils.js')
+  t.plan(1)
+  const queue = debounceUnique((item) => {
+    t.deepEqual(item, ['500', '501'], 'Processes only unique items')
+  }, 0, 0)
+  queue(500)
+  queue(500)
+  queue(501)
+})
+
+test('debounceUnique - returns promise', t => {
+  const { debounceUnique } = require('./utils.js')
+  t.plan(2)
+  const queue = debounceUnique((item) => item, 0, 0)
+  const promise1 = queue(507)
+  const promise2 = queue(508)
+  t.equal(promise1, promise2, 'Items added in same loop return same promise')
+  promise1.then((items) => {
+    t.deepEqual(items, ['507', '508'], 'Returned promise is resolved with added items')
+  })
+})
+
+test('debounceUnique - batching', t => {
+  const { debounceUnique } = require('./utils.js')
+  t.plan(3)
+  const queue = debounceUnique((item) => item, 20, 20)
+  const promise1 = queue(507)
+
+  promise1.then((item) => {
+    t.deepEqual(item, ['507'], 'First promise resolved with first added items')
+  })
+
+  setTimeout(() => {
+    const promise2 = queue(508)
+    promise2.then((item) => {
+      t.deepEqual(item, ['508'], 'Second promise resolved with second added items')
+      t.notEqual(promise1, promise2, 'First and second promises are independent')
+    })
+  }, 201)
+})
+
 test('Partition', t => {
   const { partition } = require('./utils.js')
   t.plan(3)
