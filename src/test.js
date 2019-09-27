@@ -167,7 +167,7 @@ test('Partition', t => {
 
 test('Network test - fetch state via events', t => {
   const { init } = require('./punkInfo.js')
-  const [BLOCK, PUNK] = [8587584, 8343]
+  const [BLOCK, PUNK] = [8627000, 1000]
   t.plan(1)
   const punksForSale = {_block: BLOCK}
   init(punksForSale).then((provider) => {
