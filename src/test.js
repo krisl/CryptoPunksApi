@@ -168,7 +168,7 @@ test('Network test - fetch state via events', t => {
   const { init } = require('./punkInfo.js')
   const [BLOCK, PUNK] = [8627000, 1000]
   t.plan(1)
-  const punksForSale = {_block: BLOCK}
+  const punksForSale = {_fromBlock: BLOCK, _toBlock: BLOCK}
   init(punksForSale).then((provider) => {
     t.ok(punksForSale[PUNK], `Block ${BLOCK} contains event for ${PUNK}`)
     provider.disconnect()

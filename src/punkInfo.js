@@ -75,7 +75,7 @@ function init (punksForSale) {
         console.log('Sent batch of requests, size: ', batch.requests.length)
         promise.then(
           (batchOfPunks) => {
-            console.log(batchOfPunks)
+            console.log("Received punks:", batchOfPunks.length > 100 ? batchOfPunks.length : batchOfPunks)
             console.log('Number of punks for sale', Object.values(punksForSale).filter(punk => punk && punk.isForSale).length)
           }
         ).catch((e) => promiEvent.eventEmitter.emit('error', e))
@@ -117,7 +117,7 @@ function init (punksForSale) {
     /* infura.io has a limit of 10,000 events, so would be nice to cache the sale state as of the max block */
     /* returned in the events.  Then load the cache and getPastEvents only from the last cached block */
     /* in such a case, getPastEvents will need to be extened to include PunkBought and PunkNoLongerForSale */
-    contract.getPastEvents('PunkOffered', {fromBlock: punksForSale._block || 0})
+    contract.getPastEvents('PunkOffered', {fromBlock: punksForSale._fromBlock || 0, toBlock: punksForSale._toBlock})
       .then(evts => {
         console.log('Received previous offer events, count:', evts.length)
         return evts.reduce(
