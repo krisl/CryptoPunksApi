@@ -1,6 +1,6 @@
 const Web3 = require('web3')
 const Web3PromiEvent = require('web3-core-promievent')
-const { makeBatchQueue, partition, batchPromiseBulkAdd } = require('./utils.js')
+const { debounceUnique, partition, batchPromiseBulkAdd } = require('./utils.js')
 const cryptoPunksJson = require('./resources/CryptoPunks.json')
 const contractAbi = require('./resources/Contract.abi.json')
 const NETWORK_WSS = 'wss://mainnet.infura.io/ws/v3/498494c790964af8be6eafe6e2cdffec'
@@ -80,7 +80,7 @@ function init (punksForSale) {
       }))
     }
 
-    const forSaleInfoFetchQueue = makeBatchQueue(offeredForSale, 200)
+    const forSaleInfoFetchQueue = debounceUnique(offeredForSale, 200, 2000)
 
     /* Listen for the only three events capable of invalidating */
     /* the Forsale state */
@@ -100,7 +100,7 @@ function init (punksForSale) {
           // despite having recieved the event, the network state is not up to date
           // give it a couple of seconds
           setTimeout(
-            () => forSaleInfoFetchQueue.add(evt.returnValues.punkIndex),
+            () => forSaleInfoFetchQueue(evt.returnValues.punkIndex),
             2000
           )
         }
@@ -118,7 +118,7 @@ function init (punksForSale) {
       .then(evts => {
         console.log('Received previous offer events, count:', evts.length)
         return evts.reduce(
-          (p, evt) => forSaleInfoFetchQueue.add(evt.returnValues.punkIndex),
+          (p, evt) => forSaleInfoFetchQueue(evt.returnValues.punkIndex),
           Promise.resolve()
         ).then(() => {
           console.log('Initialisation complete')
