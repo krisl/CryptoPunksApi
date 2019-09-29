@@ -101,10 +101,11 @@ function init (punksForSale) {
         } else {
           console.log('Received event', evt)
           // despite having recieved the event, the network state is not up to date
-          // give it a couple of seconds
+          // give it five seconds (two is insufficient).
+          // TODO: consider waiting for next block
           setTimeout(
             () => forSaleInfoFetchQueue(evt.returnValues.punkIndex),
-            2000
+            5000
           )
         }
       }
